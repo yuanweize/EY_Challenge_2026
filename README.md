@@ -4,6 +4,7 @@
 ![License](https://img.shields.io/badge/license-BUSL%201.1-red.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![Docs](https://img.shields.io/badge/docs-bilingual-orange.svg)
+[![Challenge](https://img.shields.io/badge/EY%20Challenge-Official%20Page-blue)](https://challenge.ey.com/challenges/2026-optimizing-clean-water-supply/overview)
 
 > **Repository Structure**:
 > - **Upstream (Official)**: `EUR-UN/EY_Challenge_2026`
@@ -11,6 +12,8 @@
 
 ### 📖 Project Overview / 项目概览
 This project aims to develop machine learning models to predict water quality parameters (Total Alkalinity, Electrical Conductance, Dissolved Reactive Phosphorus) in South Africa using satellite imagery and climate data.
+
+**Official Website**: [EY Open Science Data Challenge 2026](https://challenge.ey.com/challenges/2026-optimizing-clean-water-supply/overview)
 
 本项目旨在利用卫星图像和气候数据，开发机器学习模型以预测南非地区的水质参数（总碱度、电导率、溶解性反应磷）。
 
