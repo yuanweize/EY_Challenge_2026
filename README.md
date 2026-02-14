@@ -1,12 +1,12 @@
 # EY Open Science Data Challenge 2026
 ## Optimizing Clean Water Supply / 优化清洁水供应
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![License](https://img.shields.io/badge/license-BUSL%201.1-red.svg)
 ![Status](https://img.shields.io/badge/status-active-success.svg)
 ![Docs](https://img.shields.io/badge/docs-bilingual-orange.svg)
 
 > **Repository Structure**:
-> - **Upstream (Official)**: `eurun/EY_Challenge_2026`
+> - **Upstream (Official)**: `EUR-UN/EY_Challenge_2026`
 > - **Lead Developer**: `yuanweize/EY_Challenge_2026`
 
 ### 📖 Project Overview / 项目概览
@@ -54,5 +54,13 @@ EY_Challenge_2026/
 ### 🤝 Contributing / 贡献
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on our Fork & Pull Request workflow.
 
-### 📜 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### 📜 License / 许可
+This project is licensed under the **Business Source License 1.1 (BUSL-1.1)**.
+
+> ⚠️ **Restriction / 限制**:
+> You may NOT use this code to submit an entry to the **EY Open Science Data Challenge 2026**.
+> 您**不得**使用此代码提交 **2026 EY 开放科学数据挑战赛** 的参赛作品。
+>
+> 🔓 **Open Source Date / 开源日期**:
+> On **2026-05-07** (after the challenge ends), this restriction lifts and the license automatically converts to **MIT**, allowing full free use.
+> 在 **2026年5月7日**（挑战结束后），此限制将解除，许可证自动转换为 **MIT**，允许完全免费使用。
