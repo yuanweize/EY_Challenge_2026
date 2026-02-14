@@ -30,9 +30,6 @@ version:
 
 clean:
 	@echo "Cleaning up build artifacts..."
-	rm -rf $(OUT_DIR)/*.aux
-	rm -rf $(OUT_DIR)/*.log
-	rm -rf $(OUT_DIR)/*.toc
-	rm -rf $(OUT_DIR)/*.out
-	rm -rf $(OUT_DIR)/*.fls
-	rm -rf $(OUT_DIR)/*.fdb_latexmk
+	rm -rf $(OUT_DIR)/*.aux $(OUT_DIR)/*.log $(OUT_DIR)/*.toc $(OUT_DIR)/*.out $(OUT_DIR)/*.fls $(OUT_DIR)/*.fdb_latexmk
+	@echo "Cleaning up root directory artifacts..."
+	rm -f *.aux *.log *.toc *.out *.fls *.fdb_latexmk *.synctex.gz
