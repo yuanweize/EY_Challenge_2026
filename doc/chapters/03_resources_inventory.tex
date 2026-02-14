@@ -1,0 +1,84 @@
+\section{Downloaded Resources / 已下载资源}
+All resources have been successfully downloaded, extracted, and organized in the \texttt{resources/} directory. 所有资源均已整理在 \texttt{resources/} 目录下。
+
+\subsection{Documentation / 文档}
+\begin{itemize}
+    \item \textbf{Participant\_Guidance.pdf}: Full official guide. (完整官方指南)
+    \item \textbf{snowflake\_guide.md}: Archived "Getting Started" guide for Snowflake. (归档的 Snowflake 入门指南)
+    \item \textbf{challenge\_rules\_faq.md}: Archived official rules and FAQs. (归档的官方规则和常见问题)
+\end{itemize}
+
+\subsection{Data / 数据集}
+Location / 位置: \texttt{resources/data/}
+\begin{itemize}
+    \item \texttt{water\_quality\_training\_dataset.csv}: Historical training data (2011-2015). (历史训练数据)
+    \item \texttt{submission\_template.csv}: Template for predictions. (预测结果提交模板)
+\end{itemize}
+
+\subsection{Code: Snowflake Platform / 代码：Snowflake 平台}
+Location / 位置: \texttt{resources/code/snowflake/}
+
+\begin{infobox}[title=Deep Dive: Snowflake Package / 深度解析：Snowflake 包]
+The files in this directory are specialized for the Snowflake Cloud Data Platform.
+此目录下的文件专为 Snowflake 云数据平台优化。
+
+\textbf{Core Files / 核心文件}:
+\begin{itemize}
+    \item \textbf{snowflake\_setup.sql}: 
+    \begin{itemize}
+        \item \textit{Purpose}: Sets up network rules to allow your Snowflake environment to talk to the Microsoft Planetary Computer API.
+        \item \textit{Action}: Must be run first in a Snowflake Worksheet.
+    \end{itemize}
+    \item \textbf{GETTING\_STARTED\_NOTEBOOK.ipynb}: 
+    \begin{itemize}
+        \item \textit{Purpose}: Validates that your environment is correctly configured and can fetch a sample satellite image.
+    \end{itemize}
+    \item \textbf{BENCHMARK\_MODEL\_NOTEBOOK\_SNOWFLAKE.ipynb}: 
+    \begin{itemize}
+        \item \textit{Purpose}: An end-to-end example. it loads the training data, features, trains a model (Random Forest/XGBoost), and creates a submission file.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Data Extraction / 数据提取}:
+\begin{itemize}
+    \item \textbf{LANDSAT\_DATA\_EXTRACTION\_NOTEBOOK\_SNOWFLAKE.ipynb}: 
+    \begin{itemize}
+        \item \textit{Purpose}: Queries the Landsat Level-2 satellite data repository. It handles geospatial filtering to match the river locations.
+    \end{itemize}
+    \item \textbf{TERRACLIMATE\_DATA\_EXTRACTION\_NOTEBOOK\_SNOWFLAKE.ipynb}: 
+    \begin{itemize}
+        \item \textit{Purpose}: Extracts climatological data (precipitation, temperature) which are strong predictors for water quality.
+    \end{itemize}
+\end{itemize}
+\end{infobox}
+
+\subsection{Code: General Platform / 代码：通用平台}
+Location / 位置: \texttt{resources/code/general/}
+
+\begin{infobox}[title=Deep Dive: General Package / 深度解析：通用包]
+These notebooks are designed to run in any standard Jupyter environment (Local, Colab, Kaggle).
+这些笔记本设计用于在任何标准 Jupyter 环境中运行（本地、Colab、Kaggle）。
+
+\begin{itemize}
+    \item \textbf{Benchmark\_Model\_Notebook.ipynb}: 
+    \begin{itemize}
+        \item \textit{Content}: Contains a standard Scikit-Learn pipeline. It demonstrates data pre-processing, feature merging, and model training.
+    \end{itemize}
+    \item \textbf{Landsat\_Data\_Extraction\_Notebook.ipynb}: 
+    \begin{itemize}
+        \item \textit{method}: Uses the \texttt{pystac-client} library to search the Microsoft Planetary Computer catalog for satellite scenes.
+    \end{itemize}
+    \item \textbf{requirements.txt}: 
+    \begin{itemize}
+        \item \textit{Critical}: Lists all necessary Python libraries (e.g., \texttt{rasterio}, \texttt{pystac}, \texttt{geopandas}). Run \texttt{pip install -r requirements.txt} before starting.
+    \end{itemize}
+\end{itemize}
+\end{infobox}
+
+\subsection{Media / 多媒体}
+Location / 位置: \texttt{resources/media/}
+\begin{itemize}
+    \item \texttt{Orientation\_Session.mp4}: Project overview video. (项目概览视频)
+    \item \texttt{How\_to\_Get\_Started.mp4}: Step-by-step startup guide. (逐步启动指南)
+    \item \texttt{Tips\_for\_Success.mp4}: Useful tips. (成功秘诀)
+\end{itemize}

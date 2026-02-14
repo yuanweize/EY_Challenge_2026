@@ -1,0 +1,16 @@
+name: General Q&A / 一般问答
+title: "[Q&A]: "
+labels: ["question"]
+body:
+  - type: textarea
+    id: check-docs
+    attributes:
+      label: Documentation Check / 文档检查
+      description: Have you checked the bilingual manual? / 您检查过双语手册了吗？
+      value: "Yes, I have read the project manual."
+      render: text
+  - type: textarea
+    id: question
+    attributes:
+      label: Question / 问题
+      description: What is your question?

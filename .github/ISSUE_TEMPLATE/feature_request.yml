@@ -1,0 +1,22 @@
+name: Feature Request / 功能请求
+description: Suggest an idea for this project / 为项目建议新功能
+title: "[Feat]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in improving the project!
+  - type: textarea
+    id: pitch
+    attributes:
+      label: Description / 描述
+      description: What is the problem you want to solve or the feature you want to add?
+      placeholder: I want to be able to...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context / 其他上下文
+      description: Any other context or screenshots about the feature request here.

@@ -1,0 +1,31 @@
+# OS & Edit Junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+venv/
+env/
+*.egg-info/
+
+# Large Media Files (>100MB)
+resources/media/*.mp4
+
+# LaTeX Intermediate Files
+doc/*.aux
+doc/*.log
+doc/*.out
+doc/*.toc
+doc/*.synctex.gz
+doc/*.fls
+doc/*.fdb_latexmk
+doc/*.xdv
+
+# Keep dist PDFs, but ignore root PDFs if any
+doc/*.pdf
+!doc/dist/*.pdf

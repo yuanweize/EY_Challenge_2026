@@ -1,0 +1,33 @@
+\section{Choose Your Path / 选择您的路径}
+You can participate using either the \textbf{Snowflake Platform} (Highly Recommended) or a \textbf{General Environment} (Local/Cloud Jupyter).
+
+您可以选择使用 \textbf{Snowflake 平台}（强烈推荐）或 \textbf{通用环境}（本地/云端 Jupyter）参与。
+
+\section{Option A: Snowflake (Recommended) / 选项 A：Snowflake（推荐）}
+\begin{enumerate}
+    \item \textbf{Sign Up / 注册}: Use the dedicated 120-day trial link provided in the resources. (使用资源中提供的专用120天试用链接)
+    \item \textbf{Setup / 设置}:
+    \begin{itemize}
+        \item Log in to your Snowflake account. (登录您的 Snowflake 账户)
+        \item Open a worksheet and run the content of \texttt{resources/code/snowflake/snowflake\_setup.sql}. (打开工作表并运行 setup.sql 的内容)
+        \item This script configures external access integrations needed for satellite data. (此脚本配置卫星数据所需的外部访问集成)
+    \end{itemize}
+    \item \textbf{Upload / 上传}: Upload the notebooks from \texttt{resources/code/snowflake/} to your Snowflake workspace. (上传 snowflake 目录下的笔记本到您的工作区)
+    \item \textbf{Run / 运行}: Open \texttt{GETTING\_STARTED\_NOTEBOOK.ipynb} to verify your setup. (打开 Getting Started 笔记本验证设置)
+\end{enumerate}
+
+\section{Option B: General Environment / 选项 B：通用环境}
+\begin{enumerate}
+    \item \textbf{Environment / 环境}: Ensure you have Python 3.8+ and Jupyter installed. (确保安装了 Python 3.8+ 和 Jupyter)
+    \item \textbf{Dependencies / 依赖}: Install required libraries (pandas, numpy, scikit-learn, rasterio, etc.) using \texttt{requirements.txt}. (使用 requirements.txt 安装所需库)
+    \item \textbf{Data / 数据}: Place the \texttt{water\_quality\_training\_dataset.csv} in your project data folder. (将训练数据集放入项目数据文件夹)
+    \item \textbf{Run / 运行}: Open \texttt{Benchmark\_Model\_Notebook.ipynb} to start building your baseline model. (打开基准模型笔记本开始构建)
+\end{enumerate}
+
+\section{Submission / 提交}
+\begin{enumerate}
+    \item Train your model using the training dataset. (使用训练数据集训练模型)
+    \item Generate predictions for the 200 target points in \texttt{submission\_template.csv}. (为模板中的200个目标点生成预测)
+    \item Save your results as a CSV file. (保存结果为 CSV 文件)
+    \item Upload to the contest portal. (上传至竞赛门户)
+\end{enumerate}

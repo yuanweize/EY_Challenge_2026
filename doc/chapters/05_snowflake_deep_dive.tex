@@ -1,0 +1,27 @@
+\section{Why Snowflake? / 为什么选择 Snowflake?}
+The challenge organizers have partnered with Snowflake to provide a powerful, cloud-native environment for data engineering and machine learning. Using Snowflake allows for seamless handling of large geospatial datasets (like Landsat) without local storage constraints.
+
+挑战组织者与 Snowflake 合作，为数据工程和机器学习提供强大的云原生环境。使用 Snowflake 可以无缝处理大型地理空间数据集（如 Landsat），而不受本地存储限制的影响。
+
+\section{Deep Dive: External Access / 深度解析：外部访问}
+To access satellite data from the Microsoft Planetary Computer, Snowflake needs specific network permissions. The \texttt{snowflake\_setup.sql} script handles this.
+
+为了访问 Microsoft Planetary Computer 的卫星数据，Snowflake 需要特定的网络权限。\texttt{snowflake\_setup.sql} 脚本负责处理此问题。
+
+\begin{lstlisting}[language=SQL, basicstyle=\ttfamily\footnotesize, frame=single]
+-- Example of what the setup script does / 设置脚本示例
+CREATE OR REPLACE NETWORK RULE planetary_computer_rule
+  MODE = EGRESS
+  TYPE = HOST_PORT
+  VALUE_LIST = ('planetarycomputer.microsoft.com');
+
+CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION planetary_access
+  ALLOWED_NETWORK_RULES = (planetary_computer_rule)
+  ENABLED = TRUE;
+\end{lstlisting}
+
+\begin{warningbox}[title=Security Note / 安全提示]
+Never hardcode API keys or credentials in your notebooks. Use Snowflake Secrets or environment variables if needed.
+
+切勿在笔记本中硬编码 API 密钥或凭据。如有需要，请使用 Snowflake Secrets 或环境变量。
+\end{warningbox}

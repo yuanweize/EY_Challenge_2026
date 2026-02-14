@@ -1,0 +1,103 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{fontspec}
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{parskip}
+
+% Chinese Support
+\usepackage[scheme=plain,fontset=fandol]{ctex}
+
+% Colors
+\definecolor{eyyellow}{RGB}{255, 255, 0}
+\definecolor{eydarkgray}{RGB}{46, 46, 56}
+\definecolor{linkblue}{RGB}{0, 0, 238}
+
+% Hyperlink Setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=eydarkgray,
+    filecolor=magenta,      
+    urlcolor=linkblue,
+    pdftitle={EY Challenge 2026 Documentation},
+    pdfauthor={Antigravity Assistant},
+}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{EY Open Science Data Challenge 2026}}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{Optimizing Clean Water Supply / 优化清洁水供应}
+
+% Layout Optimizations
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+% Title Format
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\huge\color{eydarkgray}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% TColorBox Setup for Notes
+\newtcolorbox{infobox}[1][]{
+  colback=blue!5!white,
+  colframe=blue!75!black,
+  title=Note / 注意,
+  fonttitle=\bfseries,
+  #1
+}
+
+\newtcolorbox{warningbox}[1][]{
+  colback=red!5!white,
+  colframe=red!75!black,
+  title=Important / 重要,
+  fonttitle=\bfseries,
+  #1
+}
+
+\title{
+    \vspace{2cm}
+    \textbf{\Huge EY Open Science Data Challenge 2026}\\[0.5cm]
+    \textbf{\Large Optimizing Clean Water Supply}\\[0.5cm]
+    \textbf{\Large 优化清洁水供应}\\[2cm]
+    \large \textbf{Project Documentation / 项目文档}\\[0.5cm]
+    \large Prepared by Antigravity Assistant
+    \vfill
+}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+% Removed explicit \newpage to let LaTeX handle flow naturally where possible, 
+% but \tableofcontents usually forces a page break.
+
+\chapter{Introduction / 项目介绍}
+\input{chapters/01_introduction.tex}
+
+\chapter{Eligibility \& Rules / 参赛资格与规则}
+\input{chapters/02_eligibility_rules.tex}
+
+\chapter{Resource Inventory / 资源清单}
+\input{chapters/03_resources_inventory.tex}
+
+\chapter{Setup Guide / 环境配置指南}
+\input{chapters/04_setup_guide.tex}
+
+\chapter{Snowflake Deep Dive / Snowflake 深度指南}
+\input{chapters/05_snowflake_deep_dive.tex}
+
+\chapter{FAQ / 常见问题}
+\input{chapters/06_faq.tex}
+
+\end{document}
