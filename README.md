@@ -28,7 +28,7 @@ This manual includes:
 #### 2. Development / 开发
 1.  **Clone the repo**:
     ```bash
-    git clone https://github.com/yuanweize/EY_Challenge_2026.git
+    git clone https://github.com/EUR-UN/EY_Challenge_2026.git
     cd EY_Challenge_2026
     ```
 2.  **Environment Setup**:

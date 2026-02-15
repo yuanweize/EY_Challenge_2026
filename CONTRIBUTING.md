@@ -4,14 +4,14 @@ Thank you for your interest in contributing! We follow a standard **Fork & Pull 
 
 ## 🌏 Workflow Overview / 工作流概览
 
-1.  **Fork** the repository to your own account (e.g., `yuanweize/EY_Challenge_2026`).
+1.  **Fork** the repository to your own account (e.g., `your-username/EY_Challenge_2026`).
 2.  **Clone** your fork locally:
     ```bash
-    git clone https://github.com/yuanweize/EY_Challenge_2026.git
+    git clone https://github.com/<your-username>/EY_Challenge_2026.git
     ```
 3.  **Add Upstream** remote to keep in sync:
     ```bash
-    git remote add upstream https://github.com/eurun/EY_Challenge_2026.git
+    git remote add upstream https://github.com/EUR-UN/EY_Challenge_2026.git
     ```
 4.  **Create a Branch** for your feature/fix:
     ```bash
@@ -22,7 +22,7 @@ Thank you for your interest in contributing! We follow a standard **Fork & Pull 
     ```bash
     git push origin feature/my-new-model
     ```
-7.  **Open a Pull Request** (PR) against the `eurun/master` branch.
+7.  **Open a Pull Request** (PR) against the `EUR-UN/master` branch.
 
 ## 📝 Coding Standards / 代码规范
 
