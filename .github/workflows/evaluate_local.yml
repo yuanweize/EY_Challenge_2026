@@ -1,0 +1,42 @@
+name: Automated Local Evaluation
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r resources/code/general/requirements.txt
+
+    - name: Run Local Evaluation
+      run: |
+        mkdir -p output
+        python src/evaluation/evaluate_local.py > output/new_baseline_scores.txt
+        cat output/new_baseline_scores.txt
+
+    - name: Upload Local Evaluation Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: local-evaluation-metrics
+        path: output/new_baseline_scores.txt

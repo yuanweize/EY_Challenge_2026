@@ -7,29 +7,27 @@
 # Configuration
 DOCname = main
 OUT_DIR = dist
-VERSION_FILE = VERSION
+VERSION_FILE = VERSION.tex
 
 # Commands
 LATEX = lualatex
 FLAGS = -interaction=nonstopmode -output-directory=$(OUT_DIR)
 
-.PHONY: all clean version
+.PHONY: all clean
 
-all: version
+all: clean
 	@mkdir -p $(OUT_DIR)
-	@echo "Compiling $(DOCname) version $(VERSION)..."
-	$(LATEX) $(FLAGS) $(DOCname).tex
-	$(LATEX) $(FLAGS) $(DOCname).tex
-	@mv $(OUT_DIR)/$(DOCname).pdf $(OUT_DIR)/Project_Documentation_v$(VERSION).pdf
-	@echo "Build successful! Output: $(OUT_DIR)/Project_Documentation_v$(VERSION).pdf"
-
-version:
-	@if [ ! -f $(VERSION_FILE) ]; then echo 0.0 > $(VERSION_FILE); fi
-	@awk 'BEGIN { FS = "." } { printf "%.1f", $$1 + 0.1 }' $(VERSION_FILE) > $(VERSION_FILE).tmp && mv $(VERSION_FILE).tmp $(VERSION_FILE)
-	$(eval VERSION := $(shell cat $(VERSION_FILE)))
+	@if [ ! -f $(VERSION_FILE) ]; then echo "0.0" > $(VERSION_FILE); fi
+	@awk '{printf "%.1f", $$1 + 0.1}' $(VERSION_FILE) > $(VERSION_FILE).tmp && mv $(VERSION_FILE).tmp $(VERSION_FILE)
+	@VERSION=$$(cat $(VERSION_FILE)); \
+	echo "Compiling $(DOCname) version $$VERSION..."; \
+	$(LATEX) $(FLAGS) $(DOCname).tex; \
+	$(LATEX) $(FLAGS) $(DOCname).tex; \
+	mv $(OUT_DIR)/$(DOCname).pdf "$(OUT_DIR)/EY_Challenge_2026_Report_v$${VERSION}.pdf"; \
+	echo "Build successful! Output: $(OUT_DIR)/EY_Challenge_2026_Report_v$${VERSION}.pdf"
 
 clean:
 	@echo "Cleaning up build artifacts..."
-	rm -rf $(OUT_DIR)/*.aux $(OUT_DIR)/*.log $(OUT_DIR)/*.toc $(OUT_DIR)/*.out $(OUT_DIR)/*.fls $(OUT_DIR)/*.fdb_latexmk
+	rm -rf $(OUT_DIR)/*
 	@echo "Cleaning up root directory artifacts..."
 	rm -f *.aux *.log *.toc *.out *.fls *.fdb_latexmk *.synctex.gz

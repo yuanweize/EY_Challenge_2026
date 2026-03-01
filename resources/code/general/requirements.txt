@@ -37,3 +37,7 @@ dask==2024.10.0
 xarray[complete]
 
 numcodecs==0.12.1
+xgboost>=2.0.0
+lightgbm>=4.3.0
+catboost>=1.2.0
+optuna>=3.5.0

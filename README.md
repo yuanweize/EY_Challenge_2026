@@ -6,36 +6,42 @@
 ![Docs](https://img.shields.io/badge/docs-bilingual-orange.svg)
 [![Challenge](https://img.shields.io/badge/EY%20Challenge-Official%20Page-blue)](https://challenge.ey.com/challenges/2026-optimizing-clean-water-supply/overview)
 
-### 📖 Project Overview / 项目概览
-This project aims to develop machine learning models to predict water quality parameters (Total Alkalinity, Electrical Conductance, Dissolved Reactive Phosphorus) in South Africa using satellite imagery and climate data.
+### 📖 Project Overview & Tech Stack / 项目概览与技术栈
+This project builds a robust, end-to-end Machine Learning pipeline to predict water quality parameters (Total Alkalinity, Electrical Conductance, Dissolved Reactive Phosphorus) in South Africa using satellite imagery and climate data. 
+
+**Core Engineering Stack (核心技术栈)**:
+- **Data Engineering**: Microsoft Planetary Computer API (`pystac-client`, `odc-stac`) for pure, temporally-bounded (±30 days) optical band extraction with strict bit-wise Cloud/Shadow masking.
+- **Feature Engineering**: Domain-specific synthesis of Remote Sensing Water Indices (`SABI`, `NDWI`, `MNDWI`, `WRI`, `NDVI`) and TerraClimate data integration.
+- **Modeling Engine**: Ensembled Gradient Boosting framework utilizing `XGBoost`, `LightGBM`, and `CatBoost` for heterogeneous tabular approximation.
+- **MLOps & Validation**: Automated CI/CD (`GitHub Actions`) hooked to a custom `Spatial GroupKFold` local evaluation script, ensuring strict geographical extrapolation testing without coordinate leakage.
 
 **Official Website**: [EY Open Science Data Challenge 2026](https://challenge.ey.com/challenges/2026-optimizing-clean-water-supply/overview)
 
-本项目旨在利用卫星图像和气候数据，开发机器学习模型以预测南非地区的水质参数（总碱度、电导率、溶解性反应磷）。
+本项目采用现代 MLOps 与数据工程最佳实践，构建了一条端到端的机器学习流水线。技术栈涵盖了从微软行星计算机 API 的纯净光谱抓取、去云处理，到基于环境物理构造遥感水体指数的特征工程区，并最终交由深度调优的异构集成树模型（XGB/LGBM/CatBoost）进行拟合验证。同时项目内置了严格的防御性自动化空间交叉验证框架。
 
 ### 🚀 Getting Started / 快速开始
 
 #### 1. Documentation / 文档
-Please refer to the detailed **Bilingual Project Manual**:
-👉 [**Project_Documentation.pdf**](doc/dist/) (Located in `doc/dist/`)
+Please refer to the detailed **Bilingual Project Manual** covering the entire optimization journey:
+👉 [**EY_Challenge_2026_Report_v0.6.pdf**](doc/dist/EY_Challenge_2026_Report_v0.6.pdf) (Located in `doc/dist/`)
 
-This manual includes:
--   Challenge Rules & Objectives
--   Step-by-step Setup Guides (Snowflake & Local)
--   Resource Inventory
--   FAQ
-
-#### 2. Development / 开发
+#### 2. Local Environment Setup / 本地环境配置
 1.  **Clone the repo**:
     ```bash
     git clone https://github.com/EUR-UN/EY_Challenge_2026.git
     cd EY_Challenge_2026
     ```
-2.  **Environment Setup**:
-    -   **Snowflake Users**: Run `resources/code/snowflake/snowflake_setup.sql`.
-    -   **Local Users**: `pip install -r resources/code/general/requirements.txt`.
-3.  **Run Benchmarks**:
-    -   Open `resources/code/general/Benchmark_Model_Notebook.ipynb`.
+2.  **Install Python Dependencies**:
+    ```bash
+    pip install -r resources/code/general/requirements.txt
+    pip install xgboost lightgbm catboost optuna pystac-client odc-stac scikit-learn pandas numpy
+    ```
+
+#### 3. Core Pipeline / 核心流水线
+The project has evolved far beyond the official baseline notebook into a modular Python pipeline:
+- **Data Fetching**: `python src/data/fetch_planetary_data.py` (Downloads pristine optical bands and cloud masks from MS Planetary Computer)
+- **Model Training**: `python src/models/ensemble_model.py` (Trains the Gradient Boosting ensemble)
+- **Local Validation**: `python src/evaluation/evaluate_local.py` (Calculates Spatial K-Fold CV mapped to the LB)
 
 ### 📂 Directory Structure / 目录结构
 ```

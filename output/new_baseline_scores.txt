@@ -1,0 +1,45 @@
+Loading data...
+============================================================
+  Evaluating Model: 1. Original Benchmark (RandomForest, Median Fill, 4 old feats)
+============================================================
+Features (4): ['swir22_old', 'NDMI', 'MNDWI', 'pet']
+
+[Total Alkalinity]
+  -> Spatial CV R2 : 0.0293
+  -> Random CV R2  : 0.5529
+
+[Electrical Conductance]
+  -> Spatial CV R2 : 0.0000
+  -> Random CV R2  : 0.5985
+
+[Dissolved Reactive Phosphorus]
+  -> Spatial CV R2 : 0.0000
+  -> Random CV R2  : 0.5467
+------------------------------------------------------------
+Overall Spatial CV : 0.0098
+Overall Random CV  : 0.5661
+ESTIMATED LB SCORE : 0.2879
+============================================================
+
+============================================================
+  Evaluating Model: 2. Phase H Cleansed (XGBoost, Native NaN, 12 Pure Spectral Features)
+============================================================
+Features (12): ['blue', 'green', 'red', 'nir08', 'swir16', 'swir22', 'pet', 'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI']
+
+[Total Alkalinity]
+  -> Spatial CV R2 : 0.1120
+  -> Random CV R2  : 0.4488
+
+[Electrical Conductance]
+  -> Spatial CV R2 : 0.1005
+  -> Random CV R2  : 0.5026
+
+[Dissolved Reactive Phosphorus]
+  -> Spatial CV R2 : 0.0071
+  -> Random CV R2  : 0.4427
+------------------------------------------------------------
+Overall Spatial CV : 0.0732
+Overall Random CV  : 0.4647
+ESTIMATED LB SCORE : 0.2689
+============================================================
+
