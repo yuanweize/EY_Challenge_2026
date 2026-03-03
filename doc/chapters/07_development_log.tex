@@ -163,3 +163,74 @@ Following the 0.257 LB score, we strictly evaluated the "Pure 12 Spectral Featur
 \textbf{Conclusion / 结论}: While the local CV metrics are visibly lower than the artificially pumped scores of Phase 6, these represent the \textbf{first pristine, mathematically uncontaminated, and physically sound generalizable model}. The \texttt{submission\_ensemble.csv} encoded from these weights sits perfectly aligned with the pure Leaderboard rules of engagement. This uncheating iteration forms our strongest foundation yet, completely validating the 0.257 score.
 (尽管本地验证分数的绝对值看起来不如上阶段作弊骗来的幻境，但这却是本项目第一个\textbf{绝对纯净、数学界限分明、物理逻辑毫无漏洞}的顶级结构。依此脱胎换骨的 \texttt{submission\_ensemble.csv} 已经完全对齐了排行榜的生死判决法则，并搭建起了全站最硬核的大反冲基底，0.257 的巅峰得分已完美印证了这一切！)
 \end{infobox}
+
+\section{Phase 8: Data Engineering Consolidation \& Audit Trail / 阶段八：数据工程收敛与审计足迹}
+
+\subsection{Context \& Mission / 背景与任务}
+The immediate mission was to prepare a clean, analysis-ready merged training table for EDA and model development, while auditing whether previous missing-value handling decisions remained scientifically valid under the current pipeline assumptions.
+(本阶段的直接任务是产出一份可直接用于 EDA 与建模的干净训练宽表，并对“缺失值处理策略”进行审计，确认其在当前流水线前提下是否仍然科学有效。)
+
+The specific operational requests included: validating TerraClimate feature completeness, verifying Landsat data sufficiency, correcting any fragile cleaning logic, generating reproducible EDA plots, and synchronizing the engineering branch with the organization repository.
+(本阶段的具体执行请求包括：验证 TerraClimate 特征完整性、核验 Landsat 数据充足性、修正脆弱清洗逻辑、生成可复现 EDA 图表，并将工程分支与组织仓库保持同步。)
+
+\subsection{Critical Diagnosis: Median Imputation Was Invalid Here / 关键诊断：在当前设定下中位数填充不成立}
+A targeted audit against historical logs and current model stack confirmed that global median imputation for cloud-missing Landsat pixels was a structurally incorrect choice in this stage.
+(结合历史开发日志与当前模型栈的定向审计确认：在本阶段对云遮挡 Landsat 像素执行全局中位数填充，属于结构性不正确决策。)
+
+The reason is methodological: tree ensembles used in this project (XGBoost, LightGBM, CatBoost) already implement native missing-value routing; forced median filling injects synthetic ``typical'' spectra that do not represent physically observed surfaces under cloud conditions.
+(其原因是方法论层面的：项目使用的树集成模型（XGBoost、LightGBM、CatBoost）本身支持原生缺失路由；强行中位数填充会注入人造“典型光谱”，并不代表云遮挡条件下的真实地表观测。)
+
+\subsection{API Completeness Check \& Variable Mapping / API 完整性核验与变量映射}
+TerraClimate local cache originally contained only \texttt{pet}. Missing variables were fetched via Microsoft Planetary Computer using vectorized Zarr extraction, and the production set was expanded to \texttt{ppt}, \texttt{tmax}, \texttt{tmin}, and \texttt{q} (runoff).
+(TerraClimate 本地缓存最初仅包含 \texttt{pet}。缺失变量通过 Microsoft Planetary Computer 的向量化 Zarr 抽取补全，生产特征扩展为 \texttt{ppt}、\texttt{tmax}、\texttt{tmin} 与 \texttt{q}（径流）。)
+
+An implementation caveat was identified and fixed during extraction: TerraClimate latitude is descending, so spatial slicing must follow the dataset coordinate orientation; after correction, all four added climate variables were extracted with full coverage for training rows.
+(在抽取过程中识别并修复了一个实现陷阱：TerraClimate 的纬度坐标为降序，空间切片必须遵守该坐标方向；修正后，新增四个气候变量对训练样本实现了完整覆盖。)
+
+\subsection{Dual-Source Landsat Merge Strategy / Landsat 双源融合策略}
+To maximize usable spectral coverage, a dual-source merge was formalized: API-first, Official-fallback.
+(为最大化可用光谱覆盖率，正式采用了双源融合策略：API 优先、Official 回退。)
+
+Empirical audit statistics from this session:
+(本次会话得到的实证统计如下：)
+\begin{itemize}
+    \item API missing rows (key optical bands): 1,141 / 9,319 (12.2\%).
+    \item （API 在关键光谱波段上的缺失行为 1,141 / 9,319（12.2\%）。）
+    \item Official missing rows (legacy optical set): 1,085 / 9,319 (11.6\%).
+    \item （Official 在旧版光谱集上的缺失行为 1,085 / 9,319（11.6\%）。）
+    \item API rescued 844 rows where Official was missing.
+    \item （API 反向救回 Official 缺失样本 844 行。）
+    \item Official rescued 900 rows where API was missing.
+    \item （Official 反向救回 API 缺失样本 900 行。）
+    \item Rows missing in both sources reduced to 241 / 9,319 (2.6\%).
+    \item （双源同时缺失最终收敛至 241 / 9,319（2.6\%）。）
+\end{itemize}
+
+This reduced the effective spectral missingness floor substantially and removed the need for distortionary global imputation.
+(该策略显著压低了有效光谱缺失下限，同时消除了对“失真型全局填充”的依赖。)
+
+\subsection{Artifacts Produced in This Iteration / 本轮产物落地}
+The following engineering artifacts were produced and validated:
+(本轮完成并验证了以下工程产物：)
+\begin{itemize}
+    \item \texttt{src/data/build\_merged\_dataset.py}: end-to-end merge/clean pipeline with TerraClimate recovery and dual-source Landsat logic.
+    \item （\texttt{src/data/build\_merged\_dataset.py}：端到端合并清洗管线，包含 TerraClimate 补齐与 Landsat 双源融合逻辑。）
+    \item \texttt{data/merged\_training\_data\_clean.csv}: merged wide table for immediate EDA/model use.
+    \item （\texttt{data/merged\_training\_data\_clean.csv}：可直接进入 EDA 与建模的训练宽表。）
+    \item \texttt{src/evaluation/plot\_eda.py}: automated plotting script (boxplots, histograms, correlation heatmap).
+    \item （\texttt{src/evaluation/plot\_eda.py}：自动化绘图脚本（箱线图、直方图、相关性热力图）。）
+    \item \texttt{eda\_plots/}: regenerated visual diagnostics for targets and core features.
+    \item （\texttt{eda\_plots/}：目标变量与核心特征的诊断图已重新生成。）
+\end{itemize}
+
+\subsection{Version Control \& Repository Synchronization / 版本控制与仓库同步}
+The data-engineering changes were committed and pushed, then a pull request to the organization repository was opened and updated.
+(数据工程改动已完成提交与推送，并已创建并更新指向组织仓库的拉取请求。)
+
+After upstream integration, branch divergence status showed ``1 commit ahead and 1 commit behind''. The branch was reconciled by rebasing onto \texttt{upstream/master} and force-updating the fork with lease protection, resulting in full alignment (0 ahead, 0 behind).
+(在上游合入后，分支出现“领先 1 提交、落后 1 提交”的分叉状态。随后通过基于 \texttt{upstream/master} 的 rebase 与带保护的强制推送完成一致化，最终实现完全对齐（0 ahead, 0 behind）。)
+
+\begin{infobox}
+\textbf{Session Conclusion / 会话结论}: This iteration converted a fragile ``median-filled'' preprocessing path into a physically and statistically consistent data pipeline aligned with the repository's anti-leakage philosophy, while preserving full reproducibility and audit traceability in both code and documentation.
+(本轮迭代将脆弱的“中位数填充”预处理路径升级为与仓库“反泄露”哲学一致的物理与统计一致性管线，并在代码与文档两个层面保持了完整可复现与可审计足迹。)
+\end{infobox}
