@@ -243,6 +243,19 @@ CI was aligned accordingly: documentation is now built through the project Makef
 README links were updated to point to the new stable path, avoiding stale references to historical versioned filenames.
 (README 文档链接已更新为新的稳定路径，避免继续引用历史版本化文件名导致的失效链接。)
 
+\subsection{Evaluation Interpretation Clarification / 评估口径澄清}
+A review request raised a common concern: ``training uses newly merged features, but validation may not contain the same columns.'' The diagnosis is: this concern is \textbf{correct in principle}, but \textbf{not currently triggered} by the active submission pipeline.
+(本轮复核提出了一个常见担忧：“训练端使用了新合并特征，而验证端可能没有同样列。”诊断结论是：该担忧在原理上\textbf{成立}，但在当前实际提交流水线中\textbf{尚未触发}。)
+
+Current production training/submission code (\texttt{src/models/ensemble\_model.py}) uses a shared feature set for both train and validation: \texttt{blue, green, red, nir08, swir16, swir22, pet} plus engineered indices. Extra TerraClimate variables added in data-engineering (\texttt{ppt, tmax, tmin, q}) are not yet injected into this production feature list.
+(当前生产训练/提交代码（\texttt{src/models/ensemble\_model.py}）对训练与验证使用同一组特征：\texttt{blue, green, red, nir08, swir16, swir22, pet} 及其指数工程。数据工程阶段新增的 TerraClimate 变量（\texttt{ppt, tmax, tmin, q}）目前尚未注入生产特征清单。)
+
+Therefore, there is no train/validation column mismatch at the active submission path today. However, if climate-expanded features are enabled later, validation-side extraction and alignment must be updated simultaneously.
+(因此，在当前生效的提交路径中不存在训练/验证列不一致问题。但若后续启用扩展气候特征，必须同步改造验证侧抽取与对齐流程。)
+
+Another confusion source is local notebook screenshots showing high train/valid $R^2$ with random splits. Those are \textbf{local diagnostics} only, not the competition's hidden-test scoring pipeline. Official ranking is obtained only after uploading \texttt{submission\_template.csv}-format predictions and is scored by average $R^2$ across three targets on unseen labels.
+(另一个易混淆来源是本地 notebook 截图中较高的 train/valid $R^2$（通常来自随机切分）。这些仅属于\textbf{本地诊断}，并非比赛隐藏测试集打分流水线。官方排名只能通过上传符合 \texttt{submission\_template.csv} 格式的预测后获得，其评分是在不可见标签上对三目标平均 $R^2$ 计算。)
+
 \begin{infobox}
 \textbf{Session Conclusion / 会话结论}: This iteration converted a fragile ``median-filled'' preprocessing path into a physically and statistically consistent data pipeline aligned with the repository's anti-leakage philosophy, while preserving full reproducibility and audit traceability in both code and documentation.
 (本轮迭代将脆弱的“中位数填充”预处理路径升级为与仓库“反泄露”哲学一致的物理与统计一致性管线，并在代码与文档两个层面保持了完整可复现与可审计足迹。)
