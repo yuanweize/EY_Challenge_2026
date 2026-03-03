@@ -23,7 +23,7 @@ This project builds a robust, end-to-end Machine Learning pipeline to predict wa
 
 #### 1. Documentation / 文档
 Please refer to the detailed **Bilingual Project Manual** covering the entire optimization journey:
-👉 [**EY_Challenge_2026_Report_v0.6.pdf**](doc/dist/EY_Challenge_2026_Report_v0.6.pdf) (Located in `doc/dist/`)
+👉 [**EY_Challenge_2026_Report.pdf**](doc/dist/EY_Challenge_2026_Report.pdf) (Located in `doc/dist/`)
 
 #### 2. Local Environment Setup / 本地环境配置
 1.  **Clone the repo**:
@@ -47,7 +47,7 @@ The project has evolved far beyond the official baseline notebook into a modular
 ```
 EY_Challenge_2026/
 ├── doc/                 # LaTeX Documentation Source
-│   ├── dist/            # Compiled PDFs (vX.X)
+│   ├── dist/            # Compiled PDF (stable name)
 │   └── chapters/        # Bilingual Content
 ├── resources/
 │   ├── code/            # Cleaned Code Packages (Snowflake/General)

@@ -230,6 +230,19 @@ The data-engineering changes were committed and pushed, then a pull request to t
 After upstream integration, branch divergence status showed ``1 commit ahead and 1 commit behind''. The branch was reconciled by rebasing onto \texttt{upstream/master} and force-updating the fork with lease protection, resulting in full alignment (0 ahead, 0 behind).
 (在上游合入后，分支出现“领先 1 提交、落后 1 提交”的分叉状态。随后通过基于 \texttt{upstream/master} 的 rebase 与带保护的强制推送完成一致化，最终实现完全对齐（0 ahead, 0 behind）。)
 
+\subsection{Documentation Naming Standard \& CI Release Sync / 文档命名规范与 CI 发布同步}
+To improve Git friendliness and reduce filename churn, the document output naming convention was upgraded from version-suffixed files to a stable artifact name: \texttt{EY\_Challenge\_2026\_Report.pdf}.
+(为提升 Git 友好性并减少文件名抖动，文档输出命名规则从“带版本后缀文件名”升级为固定产物名：\texttt{EY\_Challenge\_2026\_Report.pdf}。)
+
+Version information remains preserved inside the document cover page via \texttt{VERSION.tex}, while the dist filename is now constant.
+(版本信息继续通过首页中的 \texttt{VERSION.tex} 保留，但 \texttt{dist} 中的文件名保持稳定不变。)
+
+CI was aligned accordingly: documentation is now built through the project Makefile, uploaded as a stable artifact in each CI run, and automatically attached to GitHub Release when a \texttt{v*} tag is pushed.
+(CI 也已同步对齐：文档在每次 CI 中通过项目 Makefile 构建并以固定名称上传为 artifact；当推送 \texttt{v*} 标签时，PDF 会自动附加到 GitHub Release。)
+
+README links were updated to point to the new stable path, avoiding stale references to historical versioned filenames.
+(README 文档链接已更新为新的稳定路径，避免继续引用历史版本化文件名导致的失效链接。)
+
 \begin{infobox}
 \textbf{Session Conclusion / 会话结论}: This iteration converted a fragile ``median-filled'' preprocessing path into a physically and statistically consistent data pipeline aligned with the repository's anti-leakage philosophy, while preserving full reproducibility and audit traceability in both code and documentation.
 (本轮迭代将脆弱的“中位数填充”预处理路径升级为与仓库“反泄露”哲学一致的物理与统计一致性管线，并在代码与文档两个层面保持了完整可复现与可审计足迹。)

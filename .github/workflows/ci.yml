@@ -7,8 +7,10 @@ name: CI
 on:
   push:
     branches: [master]
+    tags: ['v*']
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -53,22 +55,55 @@ jobs:
           find . -name '*.py' -not -path './.git/*' \
             -exec python -m py_compile {} +
 
-  # ── LaTeX build smoke test ──────────────────────────────────
-  latex:
+  # ── Documentation build ─────────────────────────────────────
+  docs:
     name: LaTeX environment
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install TeX Live (XeLaTeX)
+      - name: Install TeX Live (LuaLaTeX + CJK)
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            texlive-xetex texlive-fonts-recommended texlive-plain-generic
+            make \
+            texlive-luatex \
+            texlive-lang-chinese \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-plain-generic
 
-      - name: Smoke test — xelatex available
-        run: xelatex --version
+      - name: Build docs via Makefile
+        run: |
+          cd doc
+          make
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EY_Challenge_2026_Report
+          path: doc/dist/EY_Challenge_2026_Report.pdf
+
+  # ── Release sync for documentation ──────────────────────────
+  release-doc:
+    name: Publish PDF to Release
+    runs-on: ubuntu-latest
+    needs: docs
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download documentation artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: EY_Challenge_2026_Report
+          path: doc/dist
+
+      - name: Upload PDF to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: doc/dist/EY_Challenge_2026_Report.pdf
 
   # ── Notebook hygiene ────────────────────────────────────────
   notebooks:
