@@ -38,16 +38,25 @@ def execute_feature_engineering_train(df):
     df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12.0)
     df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12.0)
     
-    # Indices
+    # Phase F Indices
     df['NDVI_new'] = (df['nir08'] - df['red']) / (df['nir08'] + df['red'] + 1e-8)
     df['NDWI'] = (df['green'] - df['nir08']) / (df['green'] + df['nir08'] + 1e-8)
     df['MNDWI_new'] = (df['green'] - df['swir16']) / (df['green'] + df['swir16'] + 1e-8)
     df['SABI'] = (df['nir08'] - df['red']) / (df['blue'] + df['green'] + 1e-8)
     df['WRI'] = (df['green'] + df['red']) / (df['nir08'] + df['swir16'] + 1e-8)
     
-    # Phase L Restoration: Re-add geographic coords and temporal proxies to prevent blind guessing
+    # Phase M: 5 new physics-based water quality indices
+    df['NDTI'] = (df['red'] - df['green']) / (df['red'] + df['green'] + 1e-8)  # Turbidity
+    df['FAI'] = df['nir08'] - (df['red'] + (df['swir16'] - df['red']) * (865-655)/(1610-655))  # Floating Algae
+    df['CDOM'] = df['blue'] / (df['green'] + 1e-8)  # Dissolved Organic Matter proxy
+    df['Turbidity'] = df['red'] / (df['blue'] + 1e-8)  # Red/Blue turbidity ratio
+    df['BSI'] = ((df['swir16'] + df['red']) - (df['nir08'] + df['blue'])) / \
+                ((df['swir16'] + df['red']) + (df['nir08'] + df['blue']) + 1e-8)  # Bare Soil
+    
+    # Phase L+M: geographic, temporal, and all spectral indices
     engineered_cols = ['Latitude', 'Longitude', 'month_sin', 'month_cos', 
-                       'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI']
+                       'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
+                       'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -68,9 +77,18 @@ def execute_feature_engineering_test(df):
     df['SABI'] = (df['nir08'] - df['red']) / (df['blue'] + df['green'] + 1e-8)
     df['WRI'] = (df['green'] + df['red']) / (df['nir08'] + df['swir16'] + 1e-8)
     
-    # Phase L Restoration
+    # Phase M: 5 new physics-based water quality indices
+    df['NDTI'] = (df['red'] - df['green']) / (df['red'] + df['green'] + 1e-8)
+    df['FAI'] = df['nir08'] - (df['red'] + (df['swir16'] - df['red']) * (865-655)/(1610-655))
+    df['CDOM'] = df['blue'] / (df['green'] + 1e-8)
+    df['Turbidity'] = df['red'] / (df['blue'] + 1e-8)
+    df['BSI'] = ((df['swir16'] + df['red']) - (df['nir08'] + df['blue'])) / \
+                ((df['swir16'] + df['red']) + (df['nir08'] + df['blue']) + 1e-8)
+    
+    # Phase L+M
     engineered_cols = ['Latitude', 'Longitude', 'month_sin', 'month_cos',
-                       'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI']
+                       'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
+                       'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -127,9 +145,10 @@ def cross_validate_and_train_ensemble(df, feature_cols, target_col):
     oof_preds_lgb = np.zeros(len(df))
     oof_preds_cat = np.zeros(len(df))
     
-    xgb_params = {'n_estimators': 400, 'learning_rate': 0.05, 'max_depth': 6, 'subsample': 0.8, 'colsample_bytree': 0.8, 'random_state': RANDOM_STATE, 'n_jobs': -1}
-    lgb_params = {'n_estimators': 400, 'learning_rate': 0.05, 'num_leaves': 31, 'subsample': 0.8, 'colsample_bytree': 0.8, 'random_state': RANDOM_STATE, 'n_jobs': -1, 'verbose': -1}
-    cat_params = {'iterations': 400, 'learning_rate': 0.05, 'depth': 6, 'random_seed': RANDOM_STATE, 'verbose': False, 'allow_writing_files': False}
+    # Phase M: Tightened regularization to combat spatial overfitting
+    xgb_params = {'n_estimators': 500, 'learning_rate': 0.03, 'max_depth': 5, 'subsample': 0.7, 'colsample_bytree': 0.6, 'min_child_weight': 15, 'reg_alpha': 0.5, 'reg_lambda': 2.0, 'random_state': RANDOM_STATE, 'n_jobs': -1}
+    lgb_params = {'n_estimators': 500, 'learning_rate': 0.03, 'num_leaves': 24, 'max_depth': 5, 'subsample': 0.7, 'colsample_bytree': 0.6, 'min_child_samples': 20, 'reg_alpha': 0.5, 'reg_lambda': 2.0, 'random_state': RANDOM_STATE, 'n_jobs': -1, 'verbose': -1}
+    cat_params = {'iterations': 500, 'learning_rate': 0.03, 'depth': 5, 'l2_leaf_reg': 3.0, 'random_strength': 1.0, 'random_seed': RANDOM_STATE, 'verbose': False, 'allow_writing_files': False}
     
     # Check if Optuna HPO completed and load optimal params if available
     param_path = os.path.join(OUTPUT_DIR, 'best_optuna_params.joblib')

@@ -44,13 +44,20 @@ def load_and_merge_data():
     # NOTE: Our new API data has nir08 instead of nir
     df['pseudo_ndvi'] = (df['nir08'] - df['green']) / (df['nir08'] + df['green'] + 1e-8)
     df['pseudo_ndvi_old'] = (df['nir'] - df['green_old']) / (df['nir'] + df['green_old'] + 1e-8)
-    
-    # --- PHASE F: NEW WATER SPECTRAL INDICES ---
+    # --- PHASE F: WATER SPECTRAL INDICES ---
     df['NDVI_new'] = (df['nir08'] - df['red']) / (df['nir08'] + df['red'] + 1e-8)
     df['NDWI'] = (df['green'] - df['nir08']) / (df['green'] + df['nir08'] + 1e-8)
     df['MNDWI_new'] = (df['green'] - df['swir16']) / (df['green'] + df['swir16'] + 1e-8)
     df['SABI'] = (df['nir08'] - df['red']) / (df['blue'] + df['green'] + 1e-8)
     df['WRI'] = (df['green'] + df['red']) / (df['nir08'] + df['swir16'] + 1e-8)
+    
+    # --- PHASE M: NEW WATER PHYSICS INDICES ---
+    df['NDTI'] = (df['red'] - df['green']) / (df['red'] + df['green'] + 1e-8)
+    df['FAI'] = df['nir08'] - (df['red'] + (df['swir16'] - df['red']) * (865-655)/(1610-655))
+    df['CDOM'] = df['blue'] / (df['green'] + 1e-8)
+    df['Turbidity'] = df['red'] / (df['blue'] + 1e-8)
+    df['BSI'] = ((df['swir16'] + df['red']) - (df['nir08'] + df['blue'])) / \
+                ((df['swir16'] + df['red']) + (df['nir08'] + df['blue']) + 1e-8)
     
     # --- CYCLICAL TIME FEATURES ---
     df['Sample Date'] = pd.to_datetime(df['Sample Date'], dayfirst=True)
@@ -98,8 +105,10 @@ def evaluate_model(df, name, feature_cols, model_cls='RF', use_imputer=False):
             if model_cls == 'RF':
                 model = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
             else:
-                model = XGBRegressor(n_estimators=300, learning_rate=0.05, max_depth=6, 
-                                     subsample=0.8, colsample_bytree=0.8, random_state=42, n_jobs=-1, Missing=np.nan)
+                model = XGBRegressor(n_estimators=500, learning_rate=0.03, max_depth=5, 
+                                     subsample=0.7, colsample_bytree=0.6, min_child_weight=15,
+                                     reg_alpha=0.5, reg_lambda=2.0,
+                                     random_state=42, n_jobs=-1, Missing=np.nan)
             
             model.fit(X_tr, y_tr)
             oof_spatial[va_idx] = model.predict(X_va)
@@ -119,8 +128,10 @@ def evaluate_model(df, name, feature_cols, model_cls='RF', use_imputer=False):
             if model_cls == 'RF':
                 model = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
             else:
-                model = XGBRegressor(n_estimators=300, learning_rate=0.05, max_depth=6, 
-                                     subsample=0.8, colsample_bytree=0.8, random_state=42, n_jobs=-1, Missing=np.nan)
+                model = XGBRegressor(n_estimators=500, learning_rate=0.03, max_depth=5, 
+                                     subsample=0.7, colsample_bytree=0.6, min_child_weight=15,
+                                     reg_alpha=0.5, reg_lambda=2.0,
+                                     random_state=42, n_jobs=-1, Missing=np.nan)
             
             model.fit(X_tr, y_tr)
             oof_random[va_idx] = model.predict(X_va)
@@ -137,7 +148,9 @@ def evaluate_model(df, name, feature_cols, model_cls='RF', use_imputer=False):
         
     avg_spatial = np.mean(spatial_r2_list)
     avg_random = np.mean(random_r2_list)
-    estimated_lb = (avg_spatial + avg_random) / 2.0
+    # Phase M Calibration: LB heavily penalizes spatial extrapolation.
+    # Reverse-engineered from 3 confirmed LB scores: weight ≈ 0.8 spatial + 0.2 random
+    estimated_lb = (avg_spatial * 0.8) + (avg_random * 0.2)
     
     print("-" * 60)
     print(f"Overall Spatial CV : {avg_spatial:.4f}")
@@ -168,10 +181,11 @@ if __name__ == "__main__":
     if args.model in ['optimized', 'all']:
         evaluate_model(
             df, 
-            name="2. Phase L Restored (XGBoost, Native NaN, 16 Features)",
+            name="2. Phase M (XGBoost, 21 Features, Tightened Regularization)",
             feature_cols=['blue', 'green', 'red', 'nir08', 'swir16', 'swir22', 
                           'pet', 'Latitude', 'Longitude', 'month_sin', 'month_cos', 
-                          'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI'],
+                          'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
+                          'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI'],
             model_cls='XGB',
             use_imputer=False
         )
