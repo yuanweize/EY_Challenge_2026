@@ -168,9 +168,10 @@ if __name__ == "__main__":
     if args.model in ['optimized', 'all']:
         evaluate_model(
             df, 
-            name="2. Phase H Cleansed (XGBoost, Native NaN, 12 Pure Spectral Features)",
+            name="2. Phase L Restored (XGBoost, Native NaN, 16 Features)",
             feature_cols=['blue', 'green', 'red', 'nir08', 'swir16', 'swir22', 
-                          'pet', 'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI'],
+                          'pet', 'Latitude', 'Longitude', 'month_sin', 'month_cos', 
+                          'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI'],
             model_cls='XGB',
             use_imputer=False
         )
