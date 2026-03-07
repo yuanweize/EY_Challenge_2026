@@ -45,8 +45,9 @@ def execute_feature_engineering_train(df):
     df['SABI'] = (df['nir08'] - df['red']) / (df['blue'] + df['green'] + 1e-8)
     df['WRI'] = (df['green'] + df['red']) / (df['nir08'] + df['swir16'] + 1e-8)
     
-    # Phase H: Remove geographic coords, Temporal proxies, and Spatial Clusters to prevent leakage
-    engineered_cols = ['NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI']
+    # Phase L Restoration: Re-add geographic coords and temporal proxies to prevent blind guessing
+    engineered_cols = ['Latitude', 'Longitude', 'month_sin', 'month_cos', 
+                       'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -67,8 +68,9 @@ def execute_feature_engineering_test(df):
     df['SABI'] = (df['nir08'] - df['red']) / (df['blue'] + df['green'] + 1e-8)
     df['WRI'] = (df['green'] + df['red']) / (df['nir08'] + df['swir16'] + 1e-8)
     
-    # Phase H Purge
-    engineered_cols = ['NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI']
+    # Phase L Restoration
+    engineered_cols = ['Latitude', 'Longitude', 'month_sin', 'month_cos',
+                       'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
