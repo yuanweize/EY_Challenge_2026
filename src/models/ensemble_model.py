@@ -53,10 +53,12 @@ def execute_feature_engineering_train(df):
     df['BSI'] = ((df['swir16'] + df['red']) - (df['nir08'] + df['blue'])) / \
                 ((df['swir16'] + df['red']) + (df['nir08'] + df['blue']) + 1e-8)  # Bare Soil
     
-    # Phase L+M: geographic, temporal, and all spectral indices
+    # Phase L+M+N: geographic, temporal, spectral, and CLIMATE features
+    # Note: ppt/tmax/tmin/q already exist in the original terraclimate CSV
     engineered_cols = ['Latitude', 'Longitude', 'month_sin', 'month_cos', 
                        'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
-                       'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI']
+                       'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI',
+                       'ppt', 'tmax', 'tmin', 'q']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -85,10 +87,11 @@ def execute_feature_engineering_test(df):
     df['BSI'] = ((df['swir16'] + df['red']) - (df['nir08'] + df['blue'])) / \
                 ((df['swir16'] + df['red']) + (df['nir08'] + df['blue']) + 1e-8)
     
-    # Phase L+M
+    # Phase L+M+N
     engineered_cols = ['Latitude', 'Longitude', 'month_sin', 'month_cos',
                        'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
-                       'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI']
+                       'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI',
+                       'ppt', 'tmax', 'tmin', 'q']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -102,6 +105,7 @@ def load_and_preprocess_training():
     ls_api = pd.read_csv(os.path.join(PROCESSED_DATA_DIR, 'landsat_api_training.csv')).set_index('Index')
     
     merged = wq.join(ls_api, how='left')
+    # Phase N: The original tc file already contains ppt/tmax/tmin/q alongside pet
     merged = merged.merge(tc, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
     
     merged, final_features = execute_feature_engineering_train(merged)
@@ -120,6 +124,12 @@ def load_and_preprocess_validation():
     
     val_data = ls_val[['Latitude', 'Longitude', 'Sample Date']].join(ls_val_api, how='left')
     val_data = val_data.merge(tc_val, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
+    
+    # Phase N: The validation tc CSV only has 'pet'. Load API-extracted climate features.
+    tc_api_val_path = os.path.join(PROCESSED_DATA_DIR, 'terraclimate_api_validation.csv')
+    if os.path.exists(tc_api_val_path):
+        tc_api_val = pd.read_csv(tc_api_val_path).rename(columns={'pr': 'ppt', 'ro': 'q'})
+        val_data = val_data.merge(tc_api_val, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
     
     val_data, final_features = execute_feature_engineering_test(val_data)
     return sub, val_data, final_features
