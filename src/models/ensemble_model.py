@@ -1,3 +1,4 @@
+
 import os
 import warnings
 import numpy as np
@@ -58,8 +59,7 @@ def execute_feature_engineering_train(df):
                        'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
                        'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI',
                        'ppt', 'tmax', 'tmin', 'q',
-                       'soil', 'vpd', 'srad', 'water_def',
-                       'aet', 'pdsi', 'vap', 'ws']
+                       'soil', 'vpd', 'srad', 'water_def']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -91,8 +91,7 @@ def execute_feature_engineering_test(df):
                        'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
                        'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI',
                        'ppt', 'tmax', 'tmin', 'q',
-                       'soil', 'vpd', 'srad', 'water_def',
-                       'aet', 'pdsi', 'vap', 'ws']
+                       'soil', 'vpd', 'srad', 'water_def']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -116,12 +115,12 @@ def load_and_preprocess_training():
         merged = merged.merge(tc_extra, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
         print(f"  [+] Extra climate features loaded (soil/vpd/srad/water_def)")
         
-    # Phase Q: Load the remaining extra climate features (aet, pdsi, vap, ws)
-    tc_extra2_path = os.path.join(PROCESSED_DATA_DIR, 'terraclimate_extra2_training.csv')
-    if os.path.exists(tc_extra2_path):
-        tc_extra2 = pd.read_csv(tc_extra2_path)
-        merged = merged.merge(tc_extra2, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
-        print(f"  [+] Extra climate features 2 loaded (aet/pdsi/vap/ws)")
+    # Phase Q: Reverted (caused 0.265 drop due to multicollinearity)
+    # tc_extra2_path = os.path.join(PROCESSED_DATA_DIR, 'terraclimate_extra2_training.csv')
+    # if os.path.exists(tc_extra2_path):
+    #     tc_extra2 = pd.read_csv(tc_extra2_path)
+    #     merged = merged.merge(tc_extra2, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
+    #     print(f"  [+] Extra climate features 2 loaded (aet/pdsi/vap/ws)")
     
     merged, final_features = execute_feature_engineering_train(merged)
     
@@ -153,10 +152,11 @@ def load_and_preprocess_validation():
         val_data = val_data.merge(tc_extra_val, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
         
     # Phase Q: Load the remaining extra climate features for validation
-    tc_extra2_val_path = os.path.join(PROCESSED_DATA_DIR, 'terraclimate_extra2_validation.csv')
-    if os.path.exists(tc_extra2_val_path):
-        tc_extra2_val = pd.read_csv(tc_extra2_val_path)
-        val_data = val_data.merge(tc_extra2_val, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
+    # Phase Q: Reverted
+    # tc_extra2_val_path = os.path.join(PROCESSED_DATA_DIR, 'terraclimate_extra2_validation.csv')
+    # if os.path.exists(tc_extra2_val_path):
+    #     tc_extra2_val = pd.read_csv(tc_extra2_val_path)
+    #     val_data = val_data.merge(tc_extra2_val, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
     
     val_data, final_features = execute_feature_engineering_test(val_data)
     return sub, val_data, final_features
@@ -182,10 +182,12 @@ def cross_validate_and_train_ensemble(df, feature_cols, target_col):
     oof_preds_lgb = np.zeros(len(df))
     oof_preds_cat = np.zeros(len(df))
     
-    # Phase N regularization (proven on LB: 0.2879)
+    # Phase P Baseline Default
     xgb_params = {'n_estimators': 500, 'learning_rate': 0.03, 'max_depth': 5, 'subsample': 0.7, 'colsample_bytree': 0.6, 'min_child_weight': 15, 'reg_alpha': 0.5, 'reg_lambda': 2.0, 'random_state': RANDOM_STATE, 'n_jobs': -1}
     lgb_params = {'n_estimators': 500, 'learning_rate': 0.03, 'num_leaves': 24, 'max_depth': 5, 'subsample': 0.7, 'colsample_bytree': 0.6, 'min_child_samples': 20, 'reg_alpha': 0.5, 'reg_lambda': 2.0, 'random_state': RANDOM_STATE, 'n_jobs': -1, 'verbose': -1}
     cat_params = {'iterations': 500, 'learning_rate': 0.03, 'depth': 5, 'l2_leaf_reg': 3.0, 'random_strength': 1.0, 'random_seed': RANDOM_STATE, 'verbose': False, 'allow_writing_files': False}
+    
+    # Phase S: Reverting away from Optuna back to Phase P generic safety bounds
     
     for fold, (train_idx, val_idx) in enumerate(gkf.split(X, y, groups)):
         X_tr, y_tr = X.iloc[train_idx], y.iloc[train_idx]
@@ -199,8 +201,12 @@ def cross_validate_and_train_ensemble(df, feature_cols, target_col):
         oof_preds_lgb[val_idx] = m_lgb.predict(X_va)
         oof_preds_cat[val_idx] = m_cat.predict(X_va)
     
-    # Simple averaging (proven safe on LB: 0.2879)
-    oof_preds_ens = (oof_preds_xgb * 0.4) + (oof_preds_lgb * 0.3) + (oof_preds_cat * 0.3)
+    # Phase S: Target-Specific Blending (TSB)
+    if target_col == 'Dissolved Reactive Phosphorus':
+        oof_preds_ens = (oof_preds_xgb * 0.2) + (oof_preds_lgb * 0.2) + (oof_preds_cat * 0.6)
+    else:
+        # Alkalinity and EC
+        oof_preds_ens = (oof_preds_xgb * 0.4) + (oof_preds_lgb * 0.4) + (oof_preds_cat * 0.2)
     
     overall_r2 = r2_score(y_raw, oof_preds_ens)
     overall_rmse = np.sqrt(mean_squared_error(y_raw, oof_preds_ens))
@@ -256,8 +262,11 @@ def run_ensemble_pipeline():
             p_lgb = np.expm1(p_lgb)
             p_cat = np.expm1(p_cat)
         
-        # Simple averaging (Phase N proven config)
-        p_ens = (p_xgb * 0.4) + (p_lgb * 0.3) + (p_cat * 0.3)
+        # Phase S: Target-Specific Blending (TSB)
+        if target == 'Dissolved Reactive Phosphorus':
+            p_ens = (p_xgb * 0.2) + (p_lgb * 0.2) + (p_cat * 0.6)
+        else:
+            p_ens = (p_xgb * 0.4) + (p_lgb * 0.4) + (p_cat * 0.2)
         submission[target] = p_ens
     
     os.makedirs(OUTPUT_DIR, exist_ok=True)
