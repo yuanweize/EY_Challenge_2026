@@ -1,0 +1,2 @@
+Strict two-level OOF stacking for TA/EC.
+DRP = 0.30 * strict chain + 0.70 * specialist(threshold=96).
