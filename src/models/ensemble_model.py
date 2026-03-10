@@ -52,13 +52,14 @@ def execute_feature_engineering_train(df):
     df['BSI'] = ((df['swir16'] + df['red']) - (df['nir08'] + df['blue'])) / \
                 ((df['swir16'] + df['red']) + (df['nir08'] + df['blue']) + 1e-8)
     
-    # Phase P: All features — geographic, temporal, spectral, climate
-    # ppt/tmax/tmin/q from original tc CSV; soil/vpd/srad/water_def from API extraction
+    # Phase Q: All features — geographic, temporal, spectral, climate
+    # ppt/tmax/tmin/q from original tc CSV; soil/vpd/srad/water_def, aet/pdsi/vap/ws from API
     engineered_cols = ['Latitude', 'Longitude', 'month_sin', 'month_cos', 
                        'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
                        'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI',
                        'ppt', 'tmax', 'tmin', 'q',
-                       'soil', 'vpd', 'srad', 'water_def']
+                       'soil', 'vpd', 'srad', 'water_def',
+                       'aet', 'pdsi', 'vap', 'ws']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -90,7 +91,8 @@ def execute_feature_engineering_test(df):
                        'NDVI_new', 'NDWI', 'MNDWI_new', 'SABI', 'WRI',
                        'NDTI', 'FAI', 'CDOM', 'Turbidity', 'BSI',
                        'ppt', 'tmax', 'tmin', 'q',
-                       'soil', 'vpd', 'srad', 'water_def']
+                       'soil', 'vpd', 'srad', 'water_def',
+                       'aet', 'pdsi', 'vap', 'ws']
     
     final_features = BASE_FEATURES + engineered_cols
     return df, final_features
@@ -113,6 +115,13 @@ def load_and_preprocess_training():
         tc_extra = pd.read_csv(tc_extra_path)
         merged = merged.merge(tc_extra, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
         print(f"  [+] Extra climate features loaded (soil/vpd/srad/water_def)")
+        
+    # Phase Q: Load the remaining extra climate features (aet, pdsi, vap, ws)
+    tc_extra2_path = os.path.join(PROCESSED_DATA_DIR, 'terraclimate_extra2_training.csv')
+    if os.path.exists(tc_extra2_path):
+        tc_extra2 = pd.read_csv(tc_extra2_path)
+        merged = merged.merge(tc_extra2, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
+        print(f"  [+] Extra climate features 2 loaded (aet/pdsi/vap/ws)")
     
     merged, final_features = execute_feature_engineering_train(merged)
     
@@ -142,6 +151,12 @@ def load_and_preprocess_validation():
     if os.path.exists(tc_extra_val_path):
         tc_extra_val = pd.read_csv(tc_extra_val_path)
         val_data = val_data.merge(tc_extra_val, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
+        
+    # Phase Q: Load the remaining extra climate features for validation
+    tc_extra2_val_path = os.path.join(PROCESSED_DATA_DIR, 'terraclimate_extra2_validation.csv')
+    if os.path.exists(tc_extra2_val_path):
+        tc_extra2_val = pd.read_csv(tc_extra2_val_path)
+        val_data = val_data.merge(tc_extra2_val, on=['Latitude', 'Longitude', 'Sample Date'], how='left')
     
     val_data, final_features = execute_feature_engineering_test(val_data)
     return sub, val_data, final_features
