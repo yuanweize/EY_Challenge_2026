@@ -127,6 +127,39 @@ KNOWN_PUBLIC_ANCHORS = [
             "Dissolved Reactive Phosphorus": 0.181159,
         },
     },
+    {
+        "run_name": "submission_targetwise_hybrid_plus",
+        "avg_spatial": 0.3141898794206862,
+        "feature_count": 38,
+        "public_score": 0.3559,
+        "target_scores": {
+            "Total Alkalinity": 0.414095,
+            "Electrical Conductance": 0.344245,
+            "Dissolved Reactive Phosphorus": 0.184229,
+        },
+    },
+    {
+        "run_name": "submission_targetwise_hybrid_ultra",
+        "avg_spatial": 0.3165556989738068,
+        "feature_count": 41,
+        "public_score": 0.3590,
+        "target_scores": {
+            "Total Alkalinity": 0.414483,
+            "Electrical Conductance": 0.345191,
+            "Dissolved Reactive Phosphorus": 0.189993,
+        },
+    },
+    {
+        "run_name": "submission_targetwise_hybrid_ultra4",
+        "avg_spatial": 0.31801472918860466,
+        "feature_count": 41,
+        "public_score": 0.3599,
+        "target_scores": {
+            "Total Alkalinity": 0.414483,
+            "Electrical Conductance": 0.345185,
+            "Dissolved Reactive Phosphorus": 0.194376,
+        },
+    },
 ]
 
 
@@ -234,6 +267,19 @@ def _build_model(model_cls: str):
 
 
 def _read_feature_count(run_dir: str):
+    for name in ['cv_metrics.csv', 'metrics.csv']:
+        path = os.path.join(run_dir, name)
+        if not os.path.exists(path):
+            continue
+        try:
+            df = pd.read_csv(path)
+        except Exception:
+            continue
+        if 'feature_count' in df.columns:
+            vals = pd.to_numeric(df['feature_count'], errors='coerce').dropna()
+            if len(vals):
+                return int(round(float(vals.mean())))
+
     feature_list = os.path.join(run_dir, 'feature_list.txt')
     if os.path.exists(feature_list):
         with open(feature_list, 'r', encoding='utf-8') as fh:

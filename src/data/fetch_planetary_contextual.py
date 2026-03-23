@@ -26,6 +26,8 @@ BBOX_SCALES = {
     "wide": 0.0030,
 }
 MAX_SCENES_PER_WINDOW = 4
+DEFAULT_MAX_WORKERS = 12
+DEFAULT_FLUSH_SIZE = 25
 
 
 def expected_columns():
@@ -108,6 +110,15 @@ def normalize_record(record):
     return out
 
 
+def is_useful_record(record):
+    if record is None:
+        return False
+    payload = {k: v for k, v in record.items() if k != "Index"}
+    if not payload:
+        return False
+    return any(not pd.isna(v) for v in payload.values())
+
+
 def process_row(args):
     idx, lat, lon, date_str = args
     try:
@@ -147,10 +158,10 @@ def process_row(args):
 
                 prefix = f"{scale_name}_w{window}"
                 output.update(summarize_rows(rows, prefix))
-
-        return normalize_record(output)
+        record = normalize_record(output)
+        return record if is_useful_record(record) else None
     except Exception:
-        return normalize_record({"Index": idx})
+        return None
 
 
 def process_dataset(source_name, output_name):
@@ -181,17 +192,25 @@ def process_dataset(source_name, output_name):
 
     if "--test" in sys.argv:
         tasks = tasks[:10]
+    limit = os.environ.get("CONTEXT_LIMIT")
+    if limit:
+        tasks = tasks[: max(0, int(limit))]
+    max_workers = max(1, int(os.environ.get("CONTEXT_MAX_WORKERS", DEFAULT_MAX_WORKERS)))
+    flush_size = max(1, int(os.environ.get("CONTEXT_FLUSH_SIZE", DEFAULT_FLUSH_SIZE)))
 
     if not tasks:
         print("No rows left for", output_name)
         return
 
     batch = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=12) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(process_row, task): task for task in tasks}
         for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures)):
-            batch.append(future.result())
-            if len(batch) >= 25:
+            result = future.result()
+            if result is None:
+                continue
+            batch.append(result)
+            if len(batch) >= flush_size:
                 pd.DataFrame(batch, columns=EXPECTED_COLUMNS).to_csv(
                     out_file,
                     mode="a",
