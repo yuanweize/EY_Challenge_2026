@@ -1,0 +1,3 @@
+TA/EC from no_quality_flags target-chain stackers.
+DRP from no_old_optics target-chain plus expanded specialist threshold/weight search.
+Best DRP mix: thr144 threshold=144 weight=0.40 avg_spatial=0.3142 estimated_public=0.3457

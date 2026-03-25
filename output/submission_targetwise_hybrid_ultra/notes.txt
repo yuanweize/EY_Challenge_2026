@@ -1,0 +1,5 @@
+TA blend = 0.75 * no_quality + 0.25 * no_old.
+EC blend = 0.20 * no_quality + 0.80 * no_old.
+DRP chain blend = 0.15 * no_old + 0.85 * base.
+DRP final = 0.65 * chain_blend + 0.35 * specialist(threshold=144).
+Average spatial CV = 0.3166; estimated public = 0.3555.
