@@ -1,0 +1,7 @@
+candidate,ta_mean,ec_mean,drp_mean,drp_std,note
+primary_adv_taec_drp_anchor70,106.4166539555099,439.318700955219,30.208202306786244,8.35459113585814,"Primary guess: preserve advanced TA/EC, regularize DRP toward anchor specialist exact."
+alt_adv_taec_drp_anchor50_strict25,106.4166539555099,439.318700955219,28.753834043356502,8.476866472796093,DRP tri-blend with anchor specialist as center and strict hybrid as stabilizer.
+alt_adv90_ec10_drp_anchor70,106.4166539555099,436.99329934421206,30.208202306786244,8.35459113585814,Slight EC regularization plus anchor-heavy DRP blend.
+alt_adv_taec_drp_median3,106.4166539555099,439.318700955219,25.797741845855516,8.721068445725592,"Coordinate-wise DRP median of advanced, anchor exact, and strict hybrid."
+alt_adv_ta_anchor_ec_drp_anchor85,106.4166539555099,431.2414055535311,30.473785485567543,9.808694824520693,More conservative EC and DRP using anchor family outputs.
+alt_adv_taec_drp_target30_anchor70,106.4166539555099,439.318700955219,33.74632047822379,7.091552401070315,DRP only from older target-specific plus anchor specialist family.
