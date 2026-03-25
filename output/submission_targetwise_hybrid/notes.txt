@@ -1,0 +1,1 @@
+TA/EC from no_quality_flags target-chain stackers.\nDRP from no_old_optics target-chain plus specialist blend.\nBest DRP mix: thr96 weight=0.30 estimated_public=0.3458\n
