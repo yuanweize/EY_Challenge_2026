@@ -342,3 +342,27 @@ Phase R’s Optuna scan successfully pumped the Spatial CV metrics to historical
 2. \textbf{目标级统帅分配}：徒手粉碎无脑的一刀切集成（0.4/0.3/0.3）。我们汲取了扫荡阶段探测出的算法专长机械特征，为各个目标指派了专属的火力统治权：针对常规态分布的碱度和电导率，将 XGB/LGB 统治力拉满至 80\%；而针对溶解磷那令人绝望的尖峰长尾，直接赋予具有原生长尾镇压神技的 CatBoost 60\% 的绝对独裁统治权！
 \textbf{战果评估}：本地空间折叠分数在被斩断作弊链条后，不可逆转且极度符合自然规律地回落到了未经污染的、诚实的基础位准（Alk: 0.387, EC: 0.233, DRP: 0.145）。这在数学意义上宣告了模型不再自欺欺人地吞噬有限的训练集边界，它的零样本跨地理泛化重装甲宣告复出。跨越 0.30+ 的天际线之战，已全面重启！)
 \end{infobox}
+
+\subsection{Phase T: Target Chain Integration \& Ridge Meta-Stacking / T阶段：目标级联注入与Ridge元堆叠}
+\begin{infobox}
+\textbf{Innovation Source}: Code review of contributor \texttt{liuxinyi15}'s experimental branch (online score \textbf{0.3599}). Techniques cherry-picked and integrated into our robust data pipeline. \\
+(创新来源：对合作者 \texttt{liuxinyi15} 实验分支（线上得分 \textbf{0.3599}）的深度代码审查。将其核心技术精确嫁接到我们稳健的数据管线上。) \\\\
+\textbf{Key Innovations Adopted}:
+\begin{itemize}
+    \item \textbf{Target Chain Architecture}: Sequential prediction TA $\rightarrow$ EC (with \texttt{ta\_pred} as feature) $\rightarrow$ DRP (with \texttt{ta\_pred} + \texttt{ec\_pred}). Exploits inter-target physical correlations.
+    \item \textbf{Ridge Meta-Stacking}: Replaced fixed averaging with \texttt{Ridge($\alpha$=1.0)} meta-learner on XGB/LGB/CAT OOF predictions + passthrough spatial/temporal features.
+    \item \textbf{Sample Weighting}: Penalizes low-quality rows based on optical completeness, temporal offset, and climate data availability.
+    \item \textbf{DRP Specialist}: CatBoost classifier splits DRP into high/low regimes, trains separate regressors per regime, blends by classifier probability. Final DRP = 65\% chain + 35\% specialist.
+    \item \textbf{Feature Engineering Expansion}: Added interaction terms (\texttt{ppt\_pet\_ratio, temp\_range, runoff\_ratio, hydro\_stress, thermal\_runoff}), data quality flags, and old optical fallback columns. Total feature universe: 51.
+    \item \textbf{Hyperparameter Update}: \texttt{n\_estimators=700, lr=0.025, min\_child\_weight=8, subsample=0.8, colsample\_bytree=0.7}.
+\end{itemize}
+(采纳的核心创新：目标级联架构（TA→EC→DRP 逐级灌入前序预测值作为新特征），Ridge 元堆叠（取代固定权重），样本质量加权，DRP 专家模型（CatBoost 分类器按阈值分裂高低两区后分别训练回归器），特征工程扩展至 51 维，超参焕血。) \\\\
+\textbf{Local Spatial CV Results}:
+\begin{itemize}
+    \item Total Alkalinity: $R^2 = \textbf{0.4143}$, RMSE = 57.16 (benchmark: 0.414)
+    \item Electrical Conductance: $R^2 = \textbf{0.3608}$, RMSE = 275.64 (\textbf{+0.016} vs benchmark!)
+    \item Dissolved Reactive Phosphorus: $R^2 = \textbf{0.1745}$, RMSE = 46.47 (benchmark: 0.194)
+    \item \textbf{Average Spatial CV $R^2$ = 0.3165}
+\end{itemize}
+(本地空间折叠验证结果：碱度 0.4143，电导率 \textbf{0.3608}（超越基准！），溶解磷 0.1745，三项均值 \textbf{0.3165}。电导率指标相较原始来源分支实现了 0.016 的大幅跃升，证明我们的气候数据管线与目标级联架构产生了化学级别的增幅效应。)
+\end{infobox}
